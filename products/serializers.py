@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from rest_framework.renderers import JSONRenderer
+# from rest_framework.renderers import JSONRenderer
 from .models import Group, Comment, Product
 
 
@@ -9,18 +9,35 @@ from .models import Group, Comment, Product
 #         self.description = description
 
 
-class ProductSerializer(serializers.Serializer):
-    group = serializers.CharField()
-    title = serializers.CharField(max_length=100)
-    description = serializers.CharField()
-    quantity = serializers.IntegerField()
-    code = serializers.IntegerField()
-    price = serializers.FloatField()
-    time_create = serializers.DateField(read_only=True)
-    time_update = serializers.DateField(read_only=True)
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = "__all__" 
 
-    def create(self, validated_data):
-        return Product.objects.create(**validated_data)
+
+    # group_id = serializers.IntegerField()
+    # title = serializers.CharField(max_length=100)
+    # description = serializers.CharField()
+    # quantity = serializers.IntegerField()
+    # code = serializers.IntegerField()
+    # price = serializers.FloatField()
+    # time_create = serializers.DateField(read_only=True)
+    # time_update = serializers.DateField(read_only=True)
+
+    # def create(self, validated_data):
+    #     return Product.objects.create(**validated_data)
+
+    # def update(self, instance, validated_data):
+    #     instance.title = validated_data.get("title", instance.title)
+    #     instance.description = validated_data.get("description", instance.description)
+    #     instance.quantity = validated_data.get("quantity", instance.title)
+    #     instance.code = validated_data.get("code", instance.code)
+    #     instance.price = validated_data.get("price", instance.price)
+    #     instance.time_update = validated_data.get("time_update", instance.time_update)
+    #     instance.save()
+    #     return instance
+
+
 
 
 # def encode():

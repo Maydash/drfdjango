@@ -15,11 +15,10 @@ class Product(models.Model):
     title = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     quantity = models.PositiveIntegerField(default=0, blank=True)
-    code = models.PositiveIntegerField(unique=True)
     price = models.DecimalField(decimal_places=2, max_digits=8)
     time_create = models.DateField(auto_now_add=True)
     time_update = models.DateField(auto_now=True)
-    img = models.ImageField(upload_to='uploads/%Y/%m/%d/', default=None)
+    img = models.ImageField(upload_to='uploads/%Y/%m/%d/', blank=True)
 
     def __str__(self):
         return f'{self.group} : {self.title}'
