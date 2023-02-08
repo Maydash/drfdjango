@@ -15,16 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from products.views import ProductViewSet
+from products.views import ProductAPIList, ProductAPIDestroy, ProductAPIUpdate
 from rest_framework import routers
 
-router = routers.DefaultRouter()
-router.register(r'product', ProductViewSet)
-print(router.urls)
+# router = routers.DefaultRouter()
+# router.register(r'product', ProductViewSet)
+# print(router.urls)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include(router.urls)), #/api/v1/product/
-    # path('api/v1/product/', ProductViewSet.as_view({'get': 'list'})),
-    # path('api/v1/product/<int:pk>/', ProductViewSet.as_view({'put': 'update'})),
+    # path('api/v1/', include(router.urls)), /api/v1/product/
+    path('api/v1/product/', ProductAPIList.as_view()),
+    path('api/v1/product/<int:pk>/', ProductAPIUpdate.as_view()),
+    path('api/v1/productdelete/<int:pk>/', ProductAPIDestroy.as_view()),
 ]

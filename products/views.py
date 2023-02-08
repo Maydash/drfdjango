@@ -6,19 +6,35 @@ from django.forms import model_to_dict
 from .models import Product, Comment, Group
 from .serializers import ProductSerializer
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
-class ProductViewSet(viewsets.ModelViewSet):
+class ProductAPIList(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)   
 
-    def get_queryset(self):
-        return Product.objects.all()[:3]
 
-    @action(methods=['get'], detail=True)
-    def group(self, request, pk=None):
-        group = Group.objects.get(pk=pk)
-        return Response({'group': group.title})
+class ProductAPIUpdate(generics.RetrieveUpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer   
+
+
+class ProductAPIDestroy(generics.RetrieveDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer   
+
+# class ProductViewSet(viewsets.ModelViewSet):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+
+#     def get_queryset(self):
+#         return Product.objects.all()[:3]
+
+#     @action(methods=['get'], detail=True)
+#     def group(self, request, pk=None):
+#         group = Group.objects.get(pk=pk)
+#         return Response({'group': group.title})
 
 # class ProductAPIList(generics.ListCreateAPIView):
 #     queryset = Product.objects.all()

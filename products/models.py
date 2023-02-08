@@ -9,7 +9,6 @@ class Group(models.Model):
         return self.title
 
 
-
 class Product(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     title = models.CharField(max_length=100, unique=True)
@@ -19,6 +18,7 @@ class Product(models.Model):
     time_create = models.DateField(auto_now_add=True)
     time_update = models.DateField(auto_now=True)
     img = models.ImageField(upload_to='uploads/%Y/%m/%d/', blank=True)
+    user = models.ForeignKey('auth.user', verbose_name='Пользователь', on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.group} : {self.title}'
