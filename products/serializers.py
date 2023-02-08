@@ -10,6 +10,7 @@ from .models import Group, Comment, Product
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault()) # добавляет скрытое поле в форму создание со значением пользователя 
     class Meta:
         model = Product
         fields = "__all__" 

@@ -6,23 +6,34 @@ from django.forms import model_to_dict
 from .models import Product, Comment, Group
 from .serializers import ProductSerializer
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
+from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 
 
-class ProductAPIList(generics.ListAPIView):
+class ProductAPIListpagination(PageNumberPagination):
+    page_size = 3
+    page_query_param = 'page_size'
+    max_page_size = 1000
+
+
+class ProductAPIList(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)   
+    pagination_class = ProductAPIListpagination
 
 
 class ProductAPIUpdate(generics.RetrieveUpdateAPIView):
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer   
+    serializer_class = ProductSerializer  
+    permission_classes = (IsOwnerOrReadOnly,) 
 
 
 class ProductAPIDestroy(generics.RetrieveDestroyAPIView):
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer   
+    serializer_class = ProductSerializer
+    permission_classes = (IsAdminOrReadOnly,)   
 
 # class ProductViewSet(viewsets.ModelViewSet):
 #     queryset = Product.objects.all()
