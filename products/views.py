@@ -4,40 +4,75 @@ from rest_framework.response import Response
 from django.forms import model_to_dict
 # from django.shortcuts import render
 from .models import Product, Comment, Group
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, GroupSerializer
+from rest_framework.parsers import MultiPartParser
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
+# from .forms import Login_form
 
 
-class ProductAPIListpagination(PageNumberPagination):
-    page_size = 3
-    page_query_param = 'page_size'
-    max_page_size = 1000
+# class ProductAPIListpagination(PageNumberPagination):
+#     page_size = 3
+#     page_query_param = 'page_size'
+#     max_page_size = 1000
+
+class GroupAPIList(generics.ListCreateAPIView):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+
+
+class GroupAPIView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        # print(pk)
+        if not pk:
+            return Response({"error": "Method GET not allowed"})
+            
+        # instance = Product.objects.filter(group_id=pk).values()
+        instance = Product.objects.filter(group=pk)
+        group = Group.objects.filter(pk=pk)
+        print(group)
+        print(instance)
+        
+        return Response({'product': ProductSerializer(instance, many=True).data})
+        # serializer = ProductSerializer(data=request.data, instance=instance, many=True)
+        # serializer.is_valid(raise_exception=True)
+        # return Response({"post": serializer.data})
+        print(instance.data)
+        # print(serializer.data)
+
+
 
 
 class ProductAPIList(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)   
-    pagination_class = ProductAPIListpagination
+    # pagination_class = ProductAPIListpagination
+    # parser_classes = [MultiPartParser]
+
 
 
 class ProductAPIUpdate(generics.RetrieveUpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer  
-    permission_classes = (IsOwnerOrReadOnly,) 
+    permission_classes = (IsAuthenticated,) 
 
 
 class ProductAPIDestroy(generics.RetrieveDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = (IsAdminOrReadOnly,)   
+#     permission_classes = (IsAdminOrReadOnly,)   
+
+
 
 # class ProductViewSet(viewsets.ModelViewSet):
 #     queryset = Product.objects.all()
 #     serializer_class = ProductSerializer
+#     parser_classes = [MultiPartParser]
 
 #     def get_queryset(self):
 #         return Product.objects.all()[:3]

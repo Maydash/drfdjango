@@ -7,10 +7,15 @@ from .models import Group, Comment, Product
 #     def __init__(self, title, description):
 #         self.title = title
 #         self.description = description
+class GroupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Group
+        fields = "__all__"
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault()) # добавляет скрытое поле в форму создание со значением пользователя 
+    # user = serializers.HiddenField(default=serializers.CurrentUserDefault()) # добавляет скрытое поле в форму создание со значением пользователя 
     class Meta:
         model = Product
         fields = "__all__" 
