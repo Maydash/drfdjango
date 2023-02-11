@@ -13,10 +13,10 @@ from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 # from .forms import Login_form
 
 
-# class ProductAPIListpagination(PageNumberPagination):
-#     page_size = 3
-#     page_query_param = 'page_size'
-#     max_page_size = 1000
+class ProductAPIListpagination(PageNumberPagination):
+    page_size = 10
+    page_query_param = 'page_size'
+    max_page_size = 1000
 
 class GroupAPIList(generics.ListCreateAPIView):
     queryset = Group.objects.all()
@@ -24,7 +24,7 @@ class GroupAPIList(generics.ListCreateAPIView):
 
 
 class GroupAPIView(APIView):
-
+    """предстовляем товары для каждой группы"""
     def get(self, request, *args, **kwargs):
         pk = kwargs.get("pk", None)
         # print(pk)
@@ -34,10 +34,11 @@ class GroupAPIView(APIView):
         # instance = Product.objects.filter(group_id=pk).values()
         instance = Product.objects.filter(group=pk)
         group = Group.objects.filter(pk=pk)
-        print(group)
+        f = GroupSerializer(group, many=True).data
+        group = f[0]['title']
         print(instance)
         
-        return Response({'product': ProductSerializer(instance, many=True).data})
+        return Response({group: ProductSerializer(instance, many=True).data})
         # serializer = ProductSerializer(data=request.data, instance=instance, many=True)
         # serializer.is_valid(raise_exception=True)
         # return Response({"post": serializer.data})
@@ -50,9 +51,13 @@ class GroupAPIView(APIView):
 class ProductAPIList(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)   
-    # pagination_class = ProductAPIListpagination
+    # permission_classes = (IsAuthenticatedOrReadOnly,)  
+    pagination_class = ProductAPIListpagination
     # parser_classes = [MultiPartParser]
+    def get(self, request, *args, **kwargs):
+        print("text")#задача
+        return super().get(request, args, kwargs)
+    
 
 
 

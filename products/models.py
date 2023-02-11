@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Group(models.Model):
@@ -18,8 +19,8 @@ class Product(models.Model):
     time_create = models.DateField(auto_now_add=True)
     time_update = models.DateField(auto_now=True)
     img = models.ImageField(upload_to='uploads/%Y/%m/%d/', blank=True)
-    user = models.ForeignKey('auth.user', verbose_name='Пользователь', on_delete=models.CASCADE)
-
+    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
+    
     def __str__(self):
         return f'{self.group} : {self.title}'
 
