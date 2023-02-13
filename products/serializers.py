@@ -7,6 +7,14 @@ from .models import Group, Comment, Product
 #     def __init__(self, title, description):
 #         self.title = title
 #         self.description = description
+
+class CommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = "__all__"
+
+
 class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:

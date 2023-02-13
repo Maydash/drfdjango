@@ -4,18 +4,21 @@ from rest_framework.response import Response
 from django.forms import model_to_dict
 # from django.shortcuts import render
 from .models import Product, Comment, Group
-from .serializers import ProductSerializer, GroupSerializer
+from .serializers import ProductSerializer, GroupSerializer, CommentSerializer
 from rest_framework.parsers import MultiPartParser
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
 from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
+from rest_framework import filters
 # from .forms import Login_form
 
 
 class ProductAPIListpagination(PageNumberPagination):
-    page_size = 10
-    page_query_param = 'page_size'
+    
+    page_size_query_param = 'page_size'
+    page_size = 2
+    page_query_param = 'page'
     max_page_size = 1000
 
 class GroupAPIList(generics.ListCreateAPIView):
@@ -46,25 +49,50 @@ class GroupAPIView(APIView):
         # print(serializer.data)
 
 
-
-
 class ProductAPIList(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'description']
     # permission_classes = (IsAuthenticatedOrReadOnly,)  
     pagination_class = ProductAPIListpagination
     # parser_classes = [MultiPartParser]
-    def get(self, request, *args, **kwargs):
-        print("text")#задача
-        return super().get(request, args, kwargs)
+    # def get(self, request, *args, **kwargs):
+    #     print("text")#задача
+    #     return super().get(request, args, kwargs)
     
+    def get_queryset(self):
 
+        queryset = Product.objects.all()
+        group = self.request.query_params.get('group')
+        if group is not None:
+            queryset = queryset.filter(group=group)
+        return queryset
 
 
 class ProductAPIUpdate(generics.RetrieveUpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer  
-    permission_classes = (IsAuthenticated,) 
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        # print(pk)
+        if not pk:
+            return Response({"error": "Method GET not allowed"})
+            
+        # instance = Product.objects.filter(group_id=pk).values()
+
+        comment = Comment.objects.filter(product=pk)
+        product = Product.objects.filter(pk=pk)
+        product = ProductSerializer(product, many=True).data
+        # product = f[0]
+        print(product)
+        print(len(comment))
+        if len(comment) == 0:
+            return Response({'Product': product, 'Comment': 'Комментариев нету, будьте первым!'}) 
+        elif len(comment) > 0:
+            return Response({'Product': product, 'Comment': CommentSerializer(comment, many=True).data}) 
 
 
 class ProductAPIDestroy(generics.RetrieveDestroyAPIView):
